@@ -1,0 +1,159 @@
+// FILE: set.template
+// CLASS IMPLEMENTED: set (see set.h for documentation
+//
+// INVARIANT for the set class:
+//   1. The number of items in the set is in the member variable used
+//   2. The actual items of the set are stored in a linked list and cannot hold duplicates
+//      The the beginning of list is stored in the member variable head_ptr;
+
+#include "set.h"
+#include <cassert>
+#include <iostream>
+
+
+namespace main_savitch_6B
+{
+    template<typename T>
+    set<T>::set()
+    {
+        head_ptr = nullptr;
+        used = 0;
+    }
+
+    template<typename T>
+    set<T>::~set()
+    {
+        list_clear(head_ptr);
+    }
+
+    template<typename T>
+    set<T>::set(const set<T> &source)
+    {
+        node<T> *tail_ptr;
+        list_copy(source.head_ptr, head_ptr, tail_ptr);
+        used = source.used;
+    }
+
+    template<typename T>
+    set<T> &set<T>::operator=(const set &source)
+    {
+        if (&source == this)
+            return *this;
+
+        node<T> *tail_ptr;
+        list_clear(head_ptr);
+        list_copy(source.head_ptr, head_ptr, tail_ptr);
+        used = source.used;
+
+        return *this;
+    }
+
+    template<typename T>
+    void set<T>::insert(const T &entry)
+    {
+
+        if (contains(entry))
+            return;
+
+        list_head_insert(head_ptr, entry);
+        used++;
+
+    }
+
+    template<typename T>
+    bool set<T>::contains(const T &entry) const
+    {
+        return list_search(head_ptr, entry) != nullptr;
+    }
+
+    template<typename T>
+    void set<T>::remove(const T &entry)
+    {
+        node<T> *remove_ptr = list_search(head_ptr, entry);
+
+        if (remove_ptr == nullptr)
+            return;
+        remove_ptr->set_data(head_ptr->data());
+        list_head_remove(head_ptr);
+        --used;
+    }
+
+    template<typename U>
+    std::ostream& operator << (std::ostream &output, const set<U> &s)
+    {
+        const node<U> *cursor;
+
+        for (cursor = s.head_ptr; cursor != nullptr; cursor = cursor->link())
+        {
+            output << cursor->data() << " ";
+        }
+
+        return output;
+    }
+
+    template <typename U>
+    set<U> set_union (const set<U>& s1, const set<U>& s2)
+    {
+        set<U> result;
+        node<U> *cursor;
+
+        for (cursor = s1.head_ptr; cursor != nullptr; cursor = cursor->link())
+        {
+            result.insert(cursor->data());
+        }
+
+        for (cursor = s2.head_ptr; cursor != nullptr; cursor = cursor->link())
+        {
+            result.insert(cursor->data());
+        }
+
+        return result;
+    }
+
+    template <typename U>
+    set<U> set_intersection (const set<U>& s1, const set<U>& s2)
+    {
+        set<U> result;
+        node<U> *cursor;
+
+        for(cursor = s1.head_ptr; cursor != nullptr; cursor = cursor->link())
+        {
+            if (s2.contains(cursor->data()))
+                result.insert(cursor->data());
+        }
+
+        return result;
+    }
+
+    template <typename U>
+    set<U> set_difference (const set<U>& s1, const set<U>& s2)
+    {
+        set<U> result;
+        node<U> *cursor;
+
+        for(cursor = s1.head_ptr; cursor != nullptr; cursor = cursor->link())
+        {
+            if (!s2.contains(cursor->data()))
+                result.insert(cursor->data());
+        }
+
+        return result;
+    }
+
+    template<typename U>
+    bool is_subset(const set<U> &s1, const set<U> &s2)
+    {
+        set<U> union_of_set = set_union(s1, s2);
+
+        if (union_of_set.size() == s2.size())
+            return true;
+
+        return false;
+    }
+
+    template<typename U>
+    bool operator==(const set<U> &s1, const set<U> &s2)
+    {
+        return is_subset(s1, s2) && is_subset(s2, s1);
+    }
+}
