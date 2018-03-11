@@ -1,0 +1,111 @@
+// INVARIANT of sequence class:
+//   1. The items in the sequence are stored using two stacks.
+//   2. Stack one is the beginning of the list.
+
+#include <stack>
+#include <cassert>
+#include "sequence.h"
+
+namespace stack_sequence_4
+{
+    template<typename T>
+    sequence<T>::sequence()
+    {
+        first = std::stack<T>();
+        second = std::stack<T>();
+    }
+
+    template<typename T>
+    void sequence<T>::start()
+    {
+        while (first.size() > 0)
+        {
+            second.push(first.top());
+            first.pop();
+        }
+
+        if (!second.empty())
+        {
+            first.push(second.top());
+            second.pop();
+        }
+    }
+
+    template<typename T>
+    void sequence<T>::advance()
+    {
+        assert(is_item());
+
+        if (second.size() > 0)
+        {
+            first.push(second.top());
+            second.pop();
+        }
+
+        else
+        {
+            while (!first.empty())
+            {
+                second.push(first.top());
+                first.pop();
+            }
+        }
+    }
+
+    template<typename T>
+    bool sequence<T>::is_item() const
+    {
+        return (!first.empty());
+    }
+
+    template <typename T>
+    void sequence<T>::insert(const T &entry)
+    {
+        if(!first.empty())
+        {
+            second.push(first.top());
+            first.pop();
+        }
+
+        first.push(entry);
+    }
+
+    template<typename T>
+    void sequence<T>::attach(const T &entry)
+    {
+        if (!is_item())
+        {
+            while (second.size() > 0)
+            {
+                first.push(second.top());
+                second.pop();
+            }
+
+            first.push(entry);
+        }
+
+        else
+            first.push(entry);
+    }
+
+    template <typename T>
+    void sequence<T>::remove_current()
+    {
+        if (!first.empty())
+            first.pop();
+        if (!second.empty())
+        {
+            first.push(second.top());
+            second.pop();
+        }
+
+        else
+        {
+            while (first.size() > 0)
+            {
+                second.push(first.top());
+                first.pop();
+            }
+        }
+    }
+}
