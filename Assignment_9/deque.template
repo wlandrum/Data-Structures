@@ -1,0 +1,106 @@
+template<typename T>
+deque<T>::deque()
+{
+    l;
+}
+
+template<typename T>
+T &deque<T>::front()
+{
+    assert(!l.empty());
+    return l.front();
+}
+
+template<typename T>
+T deque<T>::front() const
+{
+    assert(!l.empty());
+    return l.front();
+}
+
+template<typename T>
+T &deque<T>::back()
+{
+    assert(!l.empty());
+    return l.back();
+}
+
+template<typename T>
+T deque<T>::back() const
+{
+    assert(!l.empty());
+    return l.back();
+}
+
+template<typename T>
+void deque<T>::push_front(const T &entry)
+{
+    l.push_front(entry);
+}
+
+template<typename T>
+void deque<T>::push_back(const T &entry)
+{
+    l.push_back(entry);
+}
+
+template<typename T>
+void deque<T>::pop_front()
+{
+    assert(!l.empty());
+    l.pop_front();
+}
+
+template<typename T>
+void deque<T>::pop_back()
+{
+    assert(!l.empty());
+    l.pop_back();
+}
+
+template<typename U>
+bool operator==(const deque<U> &dq1, const deque<U> &dq2)
+{
+    U pos1;
+    U pos2;
+    typename std::list<int>::const_iterator itr1;
+    typename std::list<int>::const_iterator itr2;
+
+    pos1 = 0;
+    for (itr1 = dq1.l.begin(); itr1 != dq1.l.end(); itr1++)
+
+    {
+        pos2 = 0;
+        for (itr2 = dq2.l.begin(); itr2 != dq2.l.end(); itr2++)
+        {
+            if (pos1 == pos2)
+            {
+                if (*itr1 != *itr2)
+                    return false;
+                else
+                {
+                    pos1++;
+                    break;
+                }
+
+            }
+            pos2++;
+        }
+
+    }
+    return true;
+}
+
+template<typename U>
+std::ostream &operator<<(std::ostream &out, const deque<U> &dq)
+{
+    typename std::list<int>::const_iterator itr;
+
+    for (itr = dq.l.begin(); itr != dq.l.end(); ++itr)
+    {
+        out << *itr << " ";
+    }
+
+    return out;
+}
+
